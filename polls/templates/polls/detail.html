@@ -1,6 +1,18 @@
 <h1>{{ question.question_text }}</h1>
-<ul>
+{% if error_message %}
+    <p><strong>{{ error_message }}</strong></p>
+{% endif %}
+
+<form action="{% url 'polls:vote' question.id %}" method="POST">
+    {% csrf_token %}
+
+    {# question이 가지고 있는 choice 전체 #}
     {% for choice in question.choice_set.all %}
-        <li>{{ choice.choice_text }}</li>
+
+    {#radio버튼은 중복을 허용안함, forloop: for문안에서만 쓸수 있는 특별한 함수, for를 순회할때 enumerate의 index와 같은 의미, forloop는 중복안됨#}
+    {#for속성이 특정 요소의 id를 가리키게 함, name으로 데이터가 간다. #}
+    <input type="radio" name="choice" id="choice{{ forloop.counter }}" value="{{ choice.id }}">
+    <label for="choice{{ forloop.counter }}">{{ choice.choice_text }}</label><br>
     {% endfor %}
-</ul>
+    <input type="submit" value="vote">
+</form>
